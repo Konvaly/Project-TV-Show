@@ -25,11 +25,16 @@ function makePageForEpisodes(episodeList) {
     const infoEl = document.createElement("p");
     infoEl.textContent = `Season ${episode.season}, Episode ${episode.number}`;
 
+    const imageEl = document.createElement("img");
+    imageEl.src = episode.image.medium;
+    imageEl.alt = `${episode.name} episode image`;
+
     const summaryEl = document.createElement("div");
     summaryEl.innerHTML = episode.summary;
 
     episodeEl.appendChild(titleEl);
     episodeEl.appendChild(infoEl);
+    episodeEl.appendChild(imageEl);
     episodeEl.appendChild(summaryEl);
     rootEl.appendChild(episodeEl);
   });
