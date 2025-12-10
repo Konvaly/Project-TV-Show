@@ -37,18 +37,11 @@ body {
   margin: 0;
   padding: 0.75rem 1rem;
   text-align: center;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   border-radius: 999px;
   border: 1px solid #dddddd;
   background-color: #ffffff;
-}
-
-/* Season/episode info text */
-.episode p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #555555;
 }
 
 .episode img {

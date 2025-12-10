@@ -20,10 +20,7 @@ function makePageForEpisodes(episodeList) {
     episodeEl.className = "episode";
 
     const titleEl = document.createElement("h2");
-    titleEl.textContent = `${formatEpisodeCode(episode)} - ${episode.name}`;
-
-    const infoEl = document.createElement("p");
-    infoEl.textContent = `Season ${episode.season}, Episode ${episode.number}`;
+    titleEl.textContent = `${episode.name} - ${formatEpisodeCode(episode)}`;
 
     const imageEl = document.createElement("img");
     imageEl.src = episode.image.medium;
@@ -33,7 +30,6 @@ function makePageForEpisodes(episodeList) {
     summaryEl.innerHTML = episode.summary;
 
     episodeEl.appendChild(titleEl);
-    episodeEl.appendChild(infoEl);
     episodeEl.appendChild(imageEl);
     episodeEl.appendChild(summaryEl);
     rootEl.appendChild(episodeEl);
