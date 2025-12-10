@@ -29,9 +29,13 @@ function makePageForEpisodes(episodeList) {
     const summaryEl = document.createElement("div");
     summaryEl.innerHTML = episode.summary;
 
+    const contentEl = document.createElement("div");
+    contentEl.className = "episode-content";
+    contentEl.appendChild(imageEl);
+    contentEl.appendChild(summaryEl);
+
     episodeEl.appendChild(titleEl);
-    episodeEl.appendChild(imageEl);
-    episodeEl.appendChild(summaryEl);
+    episodeEl.appendChild(contentEl);
     rootEl.appendChild(episodeEl);
   });
 }
