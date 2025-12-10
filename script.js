@@ -25,8 +25,12 @@ function makePageForEpisodes(episodeList) {
     const infoEl = document.createElement("p");
     infoEl.textContent = `Season ${episode.season}, Episode ${episode.number}`;
 
+    const summaryEl = document.createElement("div");
+    summaryEl.innerHTML = episode.summary;
+
     episodeEl.appendChild(titleEl);
     episodeEl.appendChild(infoEl);
+    episodeEl.appendChild(summaryEl);
     rootEl.appendChild(episodeEl);
   });
 }
