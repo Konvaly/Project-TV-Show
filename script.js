@@ -47,13 +47,18 @@ inputEl.setAttribute("type", "text");
 inputEl.setAttribute("minlength", "2");
 inputEl.setAttribute("maxlength", "40");
 inputEl.setAttribute("aria-label", "Search episodes");
-inputEl.className = "searchInput";
+inputEl.id = "searchInput";
 
 const bodyEl = document.querySelector("body");
 const rootEl = document.getElementById("root");
-bodyEl.insertBefore(inputEl, rootEl);
+bodyEl.appendChild(inputEl);
 
-//get episodes names and summaries to check against the input value
+const display = document.createElement("div");
+display.id = "display";
+bodyEl.insertBefore(display, rootEl);
+const allEpisodes = getAllEpisodes();
+display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
+
 function filteredEpisodes(allEpisodes) {
   makePageForEpisodes(allEpisodes);
   inputEl.addEventListener("keyup", function () {
@@ -61,11 +66,11 @@ function filteredEpisodes(allEpisodes) {
     const allEpisodes = getAllEpisodes();
     const match = allEpisodes.filter(
       (episode) =>
-        episode.name.includes(inputValue) ||
-        episode.summary.includes(inputValue)
+        episode.name.toLowerCase().includes(inputValue.toLowerCase()) ||
+        episode.summary.toLowerCase().includes(inputValue.toLowerCase())
     );
-
     makePageForEpisodes(match);
+    display.innerHTML = `Displaying ${match.length}/${allEpisodes.length} episodes`;
   });
 }
 window.onload = setup;
