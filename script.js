@@ -1,7 +1,7 @@
 //You can edit ALL of the code here
 function setup() {
   const allEpisodes = getAllEpisodes();
-  makePageForEpisodes(allEpisodes);
+  filteredEpisodes(allEpisodes);
 }
 
 function formatEpisodeCode(episode) {
@@ -40,16 +40,32 @@ function makePageForEpisodes(episodeList) {
   });
 }
 
-
-const inputEl=document.createElement("input")
+//create input field, give it attributes , append it to the body
+const inputEl = document.createElement("input");
 inputEl.setAttribute("placeholder", "Case sensitive...");
 inputEl.setAttribute("type", "text");
 inputEl.setAttribute("minlength", "2");
 inputEl.setAttribute("maxlength", "40");
 inputEl.setAttribute("aria-label", "Search episodes");
-inputEl.className="searchInput"
-const bodyEl=document.querySelector("body")
-const rootEl=document.getElementById("root")
-bodyEl.insertBefore(inputEl,rootEl)
+inputEl.className = "searchInput";
 
+const bodyEl = document.querySelector("body");
+const rootEl = document.getElementById("root");
+bodyEl.insertBefore(inputEl, rootEl);
+
+//get episodes names and summaries to check against the input value
+function filteredEpisodes(allEpisodes) {
+  makePageForEpisodes(allEpisodes);
+  inputEl.addEventListener("keyup", function () {
+    const inputValue = inputEl.value;
+    const allEpisodes = getAllEpisodes();
+    const match = allEpisodes.filter(
+      (episode) =>
+        episode.name.includes(inputValue) ||
+        episode.summary.includes(inputValue)
+    );
+
+    makePageForEpisodes(match);
+  });
+}
 window.onload = setup;
