@@ -13,7 +13,7 @@ function formatEpisodeCode(episode) {
 function makePageForEpisodes(episodeList) {
   const rootEl = document.getElementById("root");
 
-  //rootEl.innerHTML = "";
+  rootEl.innerHTML = "";
 
   episodeList.forEach((episode) => {
     const episodeEl = document.createElement("section");
@@ -42,7 +42,11 @@ function makePageForEpisodes(episodeList) {
 
 
 const inputEl=document.createElement("input")
-inputEl.placeholder="Case sensitive..."
+inputEl.setAttribute("placeholder", "Case sensitive...");
+inputEl.setAttribute("type", "text");
+inputEl.setAttribute("minlength", "2");
+inputEl.setAttribute("maxlength", "40");
+inputEl.setAttribute("aria-label", "Search episodes");
 inputEl.className="searchInput"
 const bodyEl=document.querySelector("body")
 const rootEl=document.getElementById("root")
