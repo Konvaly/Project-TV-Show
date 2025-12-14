@@ -82,7 +82,7 @@ function episodeSearch() {
   selectorEl.appendChild(allOption);
   allEpisodes.forEach((episode) => {
     const option = document.createElement("option");
-    option.value = episode.id; // unique id for each episode
+    option.value = episode.id; 
     option.textContent = `${formatEpisodeCode(episode)} - ${episode.name}`;
     selectorEl.appendChild(option);
   });
