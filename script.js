@@ -1,7 +1,18 @@
 //You can edit ALL of the code here
 function setup() {
   const allEpisodes = getAllEpisodes();
-  const { inputEl, display } = episodeSearch();
+  const { inputEl, display,selectorEl } = episodeSearch();
+  selectorEl.addEventListener("change", function () {
+    const selectedId = selectorEl.value;
+    if (selectedId === "all") {
+      makePageForEpisodes(allEpisodes);
+      display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
+    } else {
+      const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedId);
+      makePageForEpisodes([selectedEpisode]);
+      display.innerHTML = `Displaying 1/${allEpisodes.length} episodes`;
+    }
+  });
   filteredEpisodes(allEpisodes, inputEl, display);
 }
 
@@ -76,7 +87,7 @@ function episodeSearch() {
     selectorEl.appendChild(option);
   });
 
-  return { inputEl, display };
+  return { inputEl, display,selectorEl };
 }
 
 function filteredEpisodes(allEpisodes, inputEl, display) {
