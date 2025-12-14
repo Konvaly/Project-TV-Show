@@ -1,7 +1,7 @@
 //You can edit ALL of the code here
 function setup() {
   const allEpisodes = getAllEpisodes();
-  const { inputEl, display } = inputElement();
+  const { inputEl, display } = episodeSearch();
   filteredEpisodes(allEpisodes, inputEl, display);
 }
 
@@ -41,7 +41,7 @@ function makePageForEpisodes(episodeList) {
   });
 }
 
-function inputElement() {
+function episodeSearch() {
   const inputEl = document.createElement("input");
   inputEl.setAttribute("placeholder", "Case sensitive...");
   inputEl.setAttribute("type", "text");
@@ -75,7 +75,7 @@ function inputElement() {
     option.textContent = `${formatEpisodeCode(episode)} - ${episode.name}`;
     selectorEl.appendChild(option);
   });
-  
+
   return { inputEl, display };
 }
 
