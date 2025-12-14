@@ -65,6 +65,17 @@ function inputElement() {
   const allEpisodes = getAllEpisodes();
   display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
 
+  const allOption = document.createElement("option");
+  allOption.value = "all";
+  allOption.textContent = "All Episodes";
+  selectorEl.appendChild(allOption);
+  allEpisodes.forEach((episode) => {
+    const option = document.createElement("option");
+    option.value = episode.id; // unique id for each episode
+    option.textContent = `${formatEpisodeCode(episode)} - ${episode.name}`;
+    selectorEl.appendChild(option);
+  });
+  
   return { inputEl, display };
 }
 
