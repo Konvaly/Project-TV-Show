@@ -52,11 +52,16 @@ function inputElement() {
 
   const bodyEl = document.querySelector("body");
   const rootEl = document.getElementById("root");
-  bodyEl.appendChild(inputEl);
+  
 
   const display = document.createElement("div");
   display.id = "display";
+  
+  const selectorEl = document.createElement("select");
+  selectorEl.id = "episodeSelector";
+  bodyEl.insertBefore(inputEl, rootEl);
   bodyEl.insertBefore(display, rootEl);
+  bodyEl.insertBefore(selectorEl, rootEl);
   const allEpisodes = getAllEpisodes();
   display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
 
@@ -77,4 +82,9 @@ function filteredEpisodes(allEpisodes, inputEl, display) {
     display.innerHTML = `Displaying ${match.length}/${allEpisodes.length} episodes`;
   });
 }
+
+
+
+
+
 window.onload = setup;
