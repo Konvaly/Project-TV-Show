@@ -33,8 +33,21 @@ body {
 #display {
   position: fixed;
   top: 5rem;
+  
 }
 
+#episodeSelector{
+  position: fixed;
+  top: 7rem;
+  display: block;
+  padding: 8px 16px;
+  border-radius: 18px;
+  width: 13%;
+  max-width: 400px;
+  color: #222;
+  border: 2px solid #2196f3;
+  background-color: rgb(231, 236, 239);
+}
 #tvmaze-credit {
   margin-top: 2rem;
   text-align: center;
