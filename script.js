@@ -1,6 +1,32 @@
 //You can edit ALL of the code here
-function setup() {
-  const allEpisodes = getAllEpisodes();
+const EPISODES_API_URL = "https://api.tvmaze.com/shows/82/episodes";
+
+async function fetchEpisodesOnce() {
+  const statusEl = document.getElementById("status");
+  statusEl.textContent = "Loading episodes...";
+
+  try {
+    const response = await fetch(EPISODES_API_URL);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const episodes = await response.json();
+
+    statusEl.textContent = "";
+    return episodes;
+  } catch (err) {
+    statusEl.textContent =
+      "Sorry — we couldn’t load episodes right now. Please refresh the page and try again.";
+    return null;
+  }
+}
+
+async function setup() {
+  const allEpisodes = await fetchEpisodesOnce();
+  if (!allEpisodes) return;
+
   const { inputEl, display, selectorEl, showAllBtn } =
     episodeSearch(allEpisodes);
 
