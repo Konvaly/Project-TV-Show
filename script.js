@@ -4,15 +4,14 @@ function setup() {
   const { inputEl, display, selectorEl } = episodeSearch(allEpisodes);
   selectorEl.addEventListener("change", function () {
     const selectedId = selectorEl.value;
-    if (selectedId === "all") {
-      makePageForEpisodes(allEpisodes);
-      display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
-    } else {
-      const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedId);
-      makePageForEpisodes([selectedEpisode]);
-      display.innerHTML = `Displaying 1/${allEpisodes.length} episodes`;
-    }
   });
+  if (selectedId === "all") {
+    renderEpisodes(allEpisodes, allEpisodes.length, display);
+  } else {
+    const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedId);
+    renderEpisodes([selectedEpisode], allEpisodes.length, display);
+  }
+
   filteredEpisodes(allEpisodes, inputEl, display);
 }
 
@@ -88,6 +87,11 @@ function episodeSearch(allEpisodes) {
   return { inputEl, display, selectorEl };
 }
 
+function renderEpisodes(episodesToShow, totalCount, display) {
+  makePageForEpisodes(episodesToShow);
+  display.innerHTML = `Displaying ${episodesToShow.length}/${totalCount} episodes`;
+}
+
 function filteredEpisodes(allEpisodes, inputEl, display) {
   makePageForEpisodes(allEpisodes);
   inputEl.addEventListener("input", function () {
@@ -97,8 +101,7 @@ function filteredEpisodes(allEpisodes, inputEl, display) {
         episode.name.toLowerCase().includes(inputValue.toLowerCase()) ||
         episode.summary.toLowerCase().includes(inputValue.toLowerCase())
     );
-    makePageForEpisodes(matchedEpisodes);
-    display.innerHTML = `Displaying ${matchedEpisodes.length}/${allEpisodes.length} episodes`;
+    renderEpisodes(matchedEpisodes, allEpisodes.length, display);
   });
 }
 
