@@ -30,6 +30,10 @@ async function setup() {
   const { inputEl, display, selectorEl, showAllBtn } =
     episodeSearch(allEpisodes);
 
+  inputEl.disabled = false;
+  selectorEl.disabled = false;
+  showAllBtn.disabled = false;
+
   showAllBtn.addEventListener("click", function () {
     selectorEl.value = "all";
     inputEl.value = "";
@@ -116,6 +120,10 @@ function episodeSearch(allEpisodes) {
   showAllBtn.type = "button";
   showAllBtn.id = "showAllBtn";
   showAllBtn.textContent = "Show all";
+
+  inputEl.disabled = true;
+  selectorEl.disabled = true;
+  showAllBtn.disabled = true;
 
   bodyEl.insertBefore(inputEl, rootEl);
   bodyEl.insertBefore(display, rootEl);
