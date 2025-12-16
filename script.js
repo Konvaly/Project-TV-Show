@@ -1,7 +1,7 @@
 //You can edit ALL of the code here
 function setup() {
   const allEpisodes = getAllEpisodes();
-  const { inputEl, display,selectorEl } = episodeSearch();
+  const { inputEl, display, selectorEl } = episodeSearch(allEpisodes);
   selectorEl.addEventListener("change", function () {
     const selectedId = selectorEl.value;
     if (selectedId === "all") {
@@ -52,7 +52,7 @@ function makePageForEpisodes(episodeList) {
   });
 }
 
-function episodeSearch() {
+function episodeSearch(allEpisodes) {
   const inputEl = document.createElement("input");
   inputEl.setAttribute("placeholder", "Case sensitive...");
   inputEl.setAttribute("type", "text");
@@ -63,17 +63,15 @@ function episodeSearch() {
 
   const bodyEl = document.querySelector("body");
   const rootEl = document.getElementById("root");
-  
 
   const display = document.createElement("div");
   display.id = "display";
-  
+
   const selectorEl = document.createElement("select");
   selectorEl.id = "episodeSelector";
   bodyEl.insertBefore(inputEl, rootEl);
   bodyEl.insertBefore(display, rootEl);
   bodyEl.insertBefore(selectorEl, rootEl);
-  const allEpisodes = getAllEpisodes();
   display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
 
   const allOption = document.createElement("option");
@@ -82,19 +80,18 @@ function episodeSearch() {
   selectorEl.appendChild(allOption);
   allEpisodes.forEach((episode) => {
     const option = document.createElement("option");
-    option.value = episode.id; 
+    option.value = episode.id;
     option.textContent = `${formatEpisodeCode(episode)} - ${episode.name}`;
     selectorEl.appendChild(option);
   });
 
-  return { inputEl, display,selectorEl };
+  return { inputEl, display, selectorEl };
 }
 
 function filteredEpisodes(allEpisodes, inputEl, display) {
   makePageForEpisodes(allEpisodes);
   inputEl.addEventListener("keyup", function () {
     const inputValue = inputEl.value;
-    const allEpisodes = getAllEpisodes();
     const match = allEpisodes.filter(
       (episode) =>
         episode.name.toLowerCase().includes(inputValue.toLowerCase()) ||
@@ -104,9 +101,5 @@ function filteredEpisodes(allEpisodes, inputEl, display) {
     display.innerHTML = `Displaying ${match.length}/${allEpisodes.length} episodes`;
   });
 }
-
-
-
-
 
 window.onload = setup;
