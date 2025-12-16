@@ -1,19 +1,30 @@
 //You can edit ALL of the code here
 function setup() {
   const allEpisodes = getAllEpisodes();
-  const { inputEl, display,selectorEl } = episodeSearch();
+  const { inputEl, display, selectorEl, showAllBtn } =
+    episodeSearch(allEpisodes);
+
+  showAllBtn.addEventListener("click", function () {
+    selectorEl.value = "all";
+    inputEl.value = "";
+    renderEpisodes(allEpisodes, allEpisodes.length, display);
+  });
+
+  renderEpisodes(allEpisodes, allEpisodes.length, display);
+
   selectorEl.addEventListener("change", function () {
     const selectedId = selectorEl.value;
+
     if (selectedId === "all") {
-      makePageForEpisodes(allEpisodes);
-      display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
-    } else {
-      const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedId);
-      makePageForEpisodes([selectedEpisode]);
-      display.innerHTML = `Displaying 1/${allEpisodes.length} episodes`;
+      renderEpisodes(allEpisodes, allEpisodes.length, display);
+      return;
     }
+
+    const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedId);
+    renderEpisodes([selectedEpisode], allEpisodes.length, display);
   });
-  filteredEpisodes(allEpisodes, inputEl, display);
+
+  filteredEpisodes(allEpisodes, inputEl, display, selectorEl);
 }
 
 function formatEpisodeCode(episode) {
@@ -22,39 +33,44 @@ function formatEpisodeCode(episode) {
   return `S${season}E${number}`;
 }
 
+function createEpisodeCard(episode) {
+  const episodeEl = document.createElement("section");
+  episodeEl.className = "episode";
+
+  const titleEl = document.createElement("h2");
+  titleEl.textContent = `${episode.name} - ${formatEpisodeCode(episode)}`;
+
+  const imageEl = document.createElement("img");
+  imageEl.src = episode.image.medium;
+  imageEl.alt = `${episode.name} episode image`;
+
+  const summaryEl = document.createElement("div");
+  summaryEl.innerHTML = episode.summary;
+
+  const contentEl = document.createElement("div");
+  contentEl.className = "episode-content";
+  contentEl.appendChild(imageEl);
+  contentEl.appendChild(summaryEl);
+
+  episodeEl.appendChild(titleEl);
+  episodeEl.appendChild(contentEl);
+
+  return episodeEl;
+}
+
 function makePageForEpisodes(episodeList) {
   const rootEl = document.getElementById("root");
 
   rootEl.innerHTML = "";
 
   episodeList.forEach((episode) => {
-    const episodeEl = document.createElement("section");
-    episodeEl.className = "episode";
-
-    const titleEl = document.createElement("h2");
-    titleEl.textContent = `${episode.name} - ${formatEpisodeCode(episode)}`;
-
-    const imageEl = document.createElement("img");
-    imageEl.src = episode.image.medium;
-    imageEl.alt = `${episode.name} episode image`;
-
-    const summaryEl = document.createElement("div");
-    summaryEl.innerHTML = episode.summary;
-
-    const contentEl = document.createElement("div");
-    contentEl.className = "episode-content";
-    contentEl.appendChild(imageEl);
-    contentEl.appendChild(summaryEl);
-
-    episodeEl.appendChild(titleEl);
-    episodeEl.appendChild(contentEl);
-    rootEl.appendChild(episodeEl);
+    rootEl.appendChild(createEpisodeCard(episode));
   });
 }
 
-function episodeSearch() {
+function episodeSearch(allEpisodes) {
   const inputEl = document.createElement("input");
-  inputEl.setAttribute("placeholder", "Case sensitive...");
+  inputEl.setAttribute("placeholder", "Search episodes...");
   inputEl.setAttribute("type", "text");
   inputEl.setAttribute("minlength", "2");
   inputEl.setAttribute("maxlength", "40");
@@ -63,17 +79,23 @@ function episodeSearch() {
 
   const bodyEl = document.querySelector("body");
   const rootEl = document.getElementById("root");
-  
 
   const display = document.createElement("div");
   display.id = "display";
-  
+
   const selectorEl = document.createElement("select");
   selectorEl.id = "episodeSelector";
+
+  const showAllBtn = document.createElement("button");
+  showAllBtn.type = "button";
+  showAllBtn.id = "showAllBtn";
+  showAllBtn.textContent = "Show all";
+
   bodyEl.insertBefore(inputEl, rootEl);
   bodyEl.insertBefore(display, rootEl);
   bodyEl.insertBefore(selectorEl, rootEl);
-  const allEpisodes = getAllEpisodes();
+  bodyEl.insertBefore(showAllBtn, rootEl);
+
   display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
 
   const allOption = document.createElement("option");
@@ -82,31 +104,30 @@ function episodeSearch() {
   selectorEl.appendChild(allOption);
   allEpisodes.forEach((episode) => {
     const option = document.createElement("option");
-    option.value = episode.id; 
+    option.value = episode.id;
     option.textContent = `${formatEpisodeCode(episode)} - ${episode.name}`;
     selectorEl.appendChild(option);
   });
 
-  return { inputEl, display,selectorEl };
+  return { inputEl, display, selectorEl, showAllBtn };
 }
 
-function filteredEpisodes(allEpisodes, inputEl, display) {
-  makePageForEpisodes(allEpisodes);
-  inputEl.addEventListener("keyup", function () {
+function renderEpisodes(episodesToShow, totalCount, display) {
+  makePageForEpisodes(episodesToShow);
+  display.innerHTML = `Displaying ${episodesToShow.length}/${totalCount} episodes`;
+}
+
+function filteredEpisodes(allEpisodes, inputEl, display, selectorEl) {
+  inputEl.addEventListener("input", function () {
+    selectorEl.value = "all";
     const inputValue = inputEl.value;
-    const allEpisodes = getAllEpisodes();
-    const match = allEpisodes.filter(
+    const matchedEpisodes = allEpisodes.filter(
       (episode) =>
         episode.name.toLowerCase().includes(inputValue.toLowerCase()) ||
         episode.summary.toLowerCase().includes(inputValue.toLowerCase())
     );
-    makePageForEpisodes(match);
-    display.innerHTML = `Displaying ${match.length}/${allEpisodes.length} episodes`;
+    renderEpisodes(matchedEpisodes, allEpisodes.length, display);
   });
 }
-
-
-
-
 
 window.onload = setup;
