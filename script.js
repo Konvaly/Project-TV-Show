@@ -6,7 +6,10 @@ async function fetchEpisodesOnce() {
   if (cachedEpisodes) return cachedEpisodes;
 
   const statusEl = document.getElementById("status");
+  const retryBtn = document.getElementById("retryBtn");
+
   statusEl.textContent = "Loading episodes...";
+  retryBtn.hidden = true;
 
   try {
     const response = await fetch(EPISODES_API_URL);
@@ -23,6 +26,7 @@ async function fetchEpisodesOnce() {
   } catch (err) {
     statusEl.textContent =
       "Sorry, we couldn’t load episodes right now. Please refresh the page and try again.";
+    retryBtn.hidden = false;
     return null;
   }
 }
@@ -167,5 +171,10 @@ function filteredEpisodes(allEpisodes, inputEl, display, selectorEl) {
     renderEpisodes(matchedEpisodes, allEpisodes.length, display);
   });
 }
+
+document.getElementById("retryBtn").addEventListener("click", async () => {
+  cachedEpisodes = null;
+  await setup();
+});
 
 window.onload = setup;
