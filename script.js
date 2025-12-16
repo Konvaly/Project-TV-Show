@@ -2,15 +2,20 @@
 function setup() {
   const allEpisodes = getAllEpisodes();
   const { inputEl, display, selectorEl } = episodeSearch(allEpisodes);
+
+  renderEpisodes(allEpisodes, allEpisodes.length, display);
+
   selectorEl.addEventListener("change", function () {
     const selectedId = selectorEl.value;
-  });
-  if (selectedId === "all") {
-    renderEpisodes(allEpisodes, allEpisodes.length, display);
-  } else {
+
+    if (selectedId === "all") {
+      renderEpisodes(allEpisodes, allEpisodes.length, display);
+      return;
+    }
+
     const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedId);
     renderEpisodes([selectedEpisode], allEpisodes.length, display);
-  }
+  });
 
   filteredEpisodes(allEpisodes, inputEl, display);
 }
@@ -98,7 +103,6 @@ function renderEpisodes(episodesToShow, totalCount, display) {
 }
 
 function filteredEpisodes(allEpisodes, inputEl, display) {
-  makePageForEpisodes(allEpisodes);
   inputEl.addEventListener("input", function () {
     const inputValue = inputEl.value;
     const matchedEpisodes = allEpisodes.filter(
