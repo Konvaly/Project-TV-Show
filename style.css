@@ -66,6 +66,11 @@ body {
   color: #666;
 }
 
+#status {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
 /* One episode card */
 .episode {
   background-color: #ffffff;
