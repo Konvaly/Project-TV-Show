@@ -1,7 +1,10 @@
 //You can edit ALL of the code here
 const EPISODES_API_URL = "https://api.tvmaze.com/shows/82/episodes";
+let cachedEpisodes = null;
 
 async function fetchEpisodesOnce() {
+  if (cachedEpisodes) return cachedEpisodes;
+
   const statusEl = document.getElementById("status");
   statusEl.textContent = "Loading episodes...";
 
@@ -13,6 +16,7 @@ async function fetchEpisodesOnce() {
     }
 
     const episodes = await response.json();
+    cachedEpisodes = episodes;
 
     statusEl.textContent = "";
     return episodes;
