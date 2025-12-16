@@ -107,6 +107,11 @@ function makePageForEpisodes(episodeList) {
 }
 
 function episodeSearch(allEpisodes) {
+  document.getElementById("searchInput")?.remove();
+  document.getElementById("display")?.remove();
+  document.getElementById("episodeSelector")?.remove();
+  document.getElementById("showAllBtn")?.remove();
+
   const inputEl = document.createElement("input");
   inputEl.setAttribute("placeholder", "Search episodes...");
   inputEl.setAttribute("type", "text");
