@@ -1,7 +1,14 @@
 //You can edit ALL of the code here
 function setup() {
   const allEpisodes = getAllEpisodes();
-  const { inputEl, display, selectorEl } = episodeSearch(allEpisodes);
+  const { inputEl, display, selectorEl, showAllBtn } =
+    episodeSearch(allEpisodes);
+
+  showAllBtn.addEventListener("click", function () {
+    selectorEl.value = "all";
+    inputEl.value = "";
+    renderEpisodes(allEpisodes, allEpisodes.length, display);
+  });
 
   renderEpisodes(allEpisodes, allEpisodes.length, display);
 
@@ -78,6 +85,13 @@ function episodeSearch(allEpisodes) {
 
   const selectorEl = document.createElement("select");
   selectorEl.id = "episodeSelector";
+
+  const showAllBtn = document.createElement("button");
+  showAllBtn.type = "button";
+  showAllBtn.id = "showAllBtn";
+  showAllBtn.textContent = "Show all";
+  bodyEl.insertBefore(showAllBtn, rootEl);
+
   bodyEl.insertBefore(inputEl, rootEl);
   bodyEl.insertBefore(display, rootEl);
   bodyEl.insertBefore(selectorEl, rootEl);
@@ -94,7 +108,7 @@ function episodeSearch(allEpisodes) {
     selectorEl.appendChild(option);
   });
 
-  return { inputEl, display, selectorEl };
+  return { inputEl, display, selectorEl, showAllBtn };
 }
 
 function renderEpisodes(episodesToShow, totalCount, display) {
@@ -102,8 +116,9 @@ function renderEpisodes(episodesToShow, totalCount, display) {
   display.innerHTML = `Displaying ${episodesToShow.length}/${totalCount} episodes`;
 }
 
-function filteredEpisodes(allEpisodes, inputEl, display) {
+function filteredEpisodes(allEpisodes, inputEl, display, selectorEl) {
   inputEl.addEventListener("input", function () {
+    selectorEl.value = "all";
     const inputValue = inputEl.value;
     const matchedEpisodes = allEpisodes.filter(
       (episode) =>
