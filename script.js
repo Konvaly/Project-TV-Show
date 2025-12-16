@@ -110,7 +110,6 @@ function episodeSearch(allEpisodes) {
   const inputEl = document.createElement("input");
   inputEl.setAttribute("placeholder", "Search episodes...");
   inputEl.setAttribute("type", "text");
-  inputEl.setAttribute("minlength", "2");
   inputEl.setAttribute("maxlength", "40");
   inputEl.setAttribute("aria-label", "Search episodes");
   inputEl.id = "searchInput";
