@@ -21,33 +21,38 @@ function formatEpisodeCode(episode) {
   return `S${season}E${number}`;
 }
 
+function createEpisodeCard(episode) {
+  const episodeEl = document.createElement("section");
+  episodeEl.className = "episode";
+
+  const titleEl = document.createElement("h2");
+  titleEl.textContent = `${episode.name} - ${formatEpisodeCode(episode)}`;
+
+  const imageEl = document.createElement("img");
+  imageEl.src = episode.image.medium;
+  imageEl.alt = `${episode.name} episode image`;
+
+  const summaryEl = document.createElement("div");
+  summaryEl.innerHTML = episode.summary;
+
+  const contentEl = document.createElement("div");
+  contentEl.className = "episode-content";
+  contentEl.appendChild(imageEl);
+  contentEl.appendChild(summaryEl);
+
+  episodeEl.appendChild(titleEl);
+  episodeEl.appendChild(contentEl);
+
+  return episodeEl;
+}
+
 function makePageForEpisodes(episodeList) {
   const rootEl = document.getElementById("root");
 
   rootEl.innerHTML = "";
 
   episodeList.forEach((episode) => {
-    const episodeEl = document.createElement("section");
-    episodeEl.className = "episode";
-
-    const titleEl = document.createElement("h2");
-    titleEl.textContent = `${episode.name} - ${formatEpisodeCode(episode)}`;
-
-    const imageEl = document.createElement("img");
-    imageEl.src = episode.image.medium;
-    imageEl.alt = `${episode.name} episode image`;
-
-    const summaryEl = document.createElement("div");
-    summaryEl.innerHTML = episode.summary;
-
-    const contentEl = document.createElement("div");
-    contentEl.className = "episode-content";
-    contentEl.appendChild(imageEl);
-    contentEl.appendChild(summaryEl);
-
-    episodeEl.appendChild(titleEl);
-    episodeEl.appendChild(contentEl);
-    rootEl.appendChild(episodeEl);
+    rootEl.appendChild(createEpisodeCard(episode));
   });
 }
 
