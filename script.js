@@ -54,7 +54,7 @@ function makePageForEpisodes(episodeList) {
 
 function episodeSearch(allEpisodes) {
   const inputEl = document.createElement("input");
-  inputEl.setAttribute("placeholder", "Case sensitive...");
+  inputEl.setAttribute("placeholder", "Search episodes...");
   inputEl.setAttribute("type", "text");
   inputEl.setAttribute("minlength", "2");
   inputEl.setAttribute("maxlength", "40");
@@ -90,15 +90,15 @@ function episodeSearch(allEpisodes) {
 
 function filteredEpisodes(allEpisodes, inputEl, display) {
   makePageForEpisodes(allEpisodes);
-  inputEl.addEventListener("keyup", function () {
+  inputEl.addEventListener("input", function () {
     const inputValue = inputEl.value;
-    const match = allEpisodes.filter(
+    const matchedEpisodes = allEpisodes.filter(
       (episode) =>
         episode.name.toLowerCase().includes(inputValue.toLowerCase()) ||
         episode.summary.toLowerCase().includes(inputValue.toLowerCase())
     );
-    makePageForEpisodes(match);
-    display.innerHTML = `Displaying ${match.length}/${allEpisodes.length} episodes`;
+    makePageForEpisodes(matchedEpisodes);
+    display.innerHTML = `Displaying ${matchedEpisodes.length}/${allEpisodes.length} episodes`;
   });
 }
 
