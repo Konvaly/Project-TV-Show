@@ -66,6 +66,20 @@ body {
   color: #666;
 }
 
+#status {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+#retryBtn {
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 2px solid #2196f3;
+  background-color: #e7ecef;
+  cursor: pointer;
+}
+
 /* One episode card */
 .episode {
   background-color: #ffffff;

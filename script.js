@@ -1,8 +1,46 @@
 //You can edit ALL of the code here
-function setup() {
-  const allEpisodes = getAllEpisodes();
+const EPISODES_API_URL = "https://api.tvmaze.com/shows/82/episodes";
+let cachedEpisodes = null;
+
+async function fetchEpisodesOnce() {
+  if (cachedEpisodes) return cachedEpisodes;
+
+  const statusEl = document.getElementById("status");
+  const retryBtn = document.getElementById("retryBtn");
+
+  statusEl.textContent = "Loading episodes...";
+  retryBtn.hidden = true;
+
+  try {
+    const response = await fetch(EPISODES_API_URL);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const episodes = await response.json();
+    cachedEpisodes = episodes;
+
+    statusEl.textContent = "";
+    return episodes;
+  } catch (err) {
+    statusEl.textContent =
+      "Sorry, we couldn’t load episodes right now. Please refresh the page and try again.";
+    retryBtn.hidden = false;
+    return null;
+  }
+}
+
+async function setup() {
+  const allEpisodes = await fetchEpisodesOnce();
+  if (!allEpisodes) return;
+
   const { inputEl, display, selectorEl, showAllBtn } =
     episodeSearch(allEpisodes);
+
+  inputEl.disabled = false;
+  selectorEl.disabled = false;
+  showAllBtn.disabled = false;
 
   showAllBtn.addEventListener("click", function () {
     selectorEl.value = "all";
@@ -69,10 +107,14 @@ function makePageForEpisodes(episodeList) {
 }
 
 function episodeSearch(allEpisodes) {
+  document.getElementById("searchInput")?.remove();
+  document.getElementById("display")?.remove();
+  document.getElementById("episodeSelector")?.remove();
+  document.getElementById("showAllBtn")?.remove();
+
   const inputEl = document.createElement("input");
   inputEl.setAttribute("placeholder", "Search episodes...");
   inputEl.setAttribute("type", "text");
-  inputEl.setAttribute("minlength", "2");
   inputEl.setAttribute("maxlength", "40");
   inputEl.setAttribute("aria-label", "Search episodes");
   inputEl.id = "searchInput";
@@ -90,6 +132,10 @@ function episodeSearch(allEpisodes) {
   showAllBtn.type = "button";
   showAllBtn.id = "showAllBtn";
   showAllBtn.textContent = "Show all";
+
+  inputEl.disabled = true;
+  selectorEl.disabled = true;
+  showAllBtn.disabled = true;
 
   bodyEl.insertBefore(inputEl, rootEl);
   bodyEl.insertBefore(display, rootEl);
@@ -129,5 +175,10 @@ function filteredEpisodes(allEpisodes, inputEl, display, selectorEl) {
     renderEpisodes(matchedEpisodes, allEpisodes.length, display);
   });
 }
+
+document.getElementById("retryBtn").addEventListener("click", async () => {
+  cachedEpisodes = null;
+  await setup();
+});
 
 window.onload = setup;
