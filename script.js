@@ -24,7 +24,7 @@ function setup() {
     renderEpisodes([selectedEpisode], allEpisodes.length, display);
   });
 
-  filteredEpisodes(allEpisodes, inputEl, display);
+  filteredEpisodes(allEpisodes, inputEl, display, selectorEl);
 }
 
 function formatEpisodeCode(episode) {
@@ -90,11 +90,12 @@ function episodeSearch(allEpisodes) {
   showAllBtn.type = "button";
   showAllBtn.id = "showAllBtn";
   showAllBtn.textContent = "Show all";
-  bodyEl.insertBefore(showAllBtn, rootEl);
 
   bodyEl.insertBefore(inputEl, rootEl);
   bodyEl.insertBefore(display, rootEl);
   bodyEl.insertBefore(selectorEl, rootEl);
+  bodyEl.insertBefore(showAllBtn, rootEl);
+
   display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
 
   const allOption = document.createElement("option");
