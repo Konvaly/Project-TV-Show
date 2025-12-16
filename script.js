@@ -18,7 +18,7 @@ async function fetchEpisodesOnce() {
     return episodes;
   } catch (err) {
     statusEl.textContent =
-      "Sorry — we couldn’t load episodes right now. Please refresh the page and try again.";
+      "Sorry, we couldn’t load episodes right now. Please refresh the page and try again.";
     return null;
   }
 }
