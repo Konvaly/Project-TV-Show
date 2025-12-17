@@ -32,6 +32,22 @@ async function fetchEpisodesOnce() {
 }
 
 async function setup() {
+
+const SHOWS_API_URL = "https://api.tvmaze.com/shows";
+let showSelector=document.getElementById("showSelector")
+if(showSelector) showSelector.remove()
+
+  showSelector=document.createElement("select")
+  showSelector.id="showSelector"
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Select a show...";
+  showSelector.appendChild(defaultOption);
+
+  const bodyEl = document.querySelector("body");
+  const rootEl = document.getElementById("root");
+  bodyEl.insertBefore(showSelector, rootEl);
+
   const allEpisodes = await fetchEpisodesOnce();
   if (!allEpisodes) return;
 
