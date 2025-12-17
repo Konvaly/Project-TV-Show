@@ -44,6 +44,21 @@ if(showSelector) showSelector.remove()
   defaultOption.textContent = "Select a show...";
   showSelector.appendChild(defaultOption);
 
+  try {
+    const response = await fetch(SHOWS_API_URL);
+    if (response.ok) {
+      const shows = await response.json();
+      shows.forEach((show) => {
+        const option = document.createElement("option");
+        option.value = show.id;
+        option.textContent = show.name;
+        showSelector.appendChild(option);
+      });
+    }
+  } catch(err){
+    
+  }
+
   const bodyEl = document.querySelector("body");
   const rootEl = document.getElementById("root");
   bodyEl.insertBefore(showSelector, rootEl);
