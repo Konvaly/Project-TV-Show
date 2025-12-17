@@ -56,13 +56,58 @@ if(showSelector) showSelector.remove()
       });
     }
   } catch(err){
-    
+
   }
 
   const bodyEl = document.querySelector("body");
   const rootEl = document.getElementById("root");
   bodyEl.insertBefore(showSelector, rootEl);
 
+  showSelector.addEventListener("change", async function () {
+    const showId = showSelector.value;
+    if (!showId) return;
+    const episodesUrl = `https://api.tvmaze.com/shows/${showId}/episodes`;
+    const statusEl = document.getElementById("status");
+    if (statusEl) statusEl.textContent = "Loading episodes...";
+
+    try {
+      const response = await fetch(episodesUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const episodes = await response.json();
+
+      const { inputEl, display, selectorEl, showAllBtn } =
+        episodeSearch(episodes);
+
+      inputEl.disabled = false;
+      selectorEl.disabled = false;
+      showAllBtn.disabled = false;
+
+      showAllBtn.addEventListener("click", function () {
+        selectorEl.value = "all";
+        inputEl.value = "";
+        renderEpisodes(episodes, episodes.length, display);
+      });
+      renderEpisodes(episodes, episodes.length, display);
+
+      selectorEl.addEventListener("change", function () {
+        const selectedId = selectorEl.value;
+        if (selectedId === "all") {
+          renderEpisodes(episodes, episodes.length, display);
+          return;
+        }
+        const selectedEpisode = episodes.find((ep) => ep.id == selectedId);
+        renderEpisodes([selectedEpisode], episodes.length, display);
+      });
+
+      filteredEpisodes(episodes, inputEl, display, selectorEl);
+
+      if (statusEl) statusEl.textContent = "";
+    } catch (err) {
+      if (statusEl)
+        statusEl.textContent =
+          "Sorry, we couldn’t load episodes for this show. Please try again.";
+    }
+  });
   const allEpisodes = await fetchEpisodesOnce();
   if (!allEpisodes) return;
 
