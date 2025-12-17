@@ -112,8 +112,7 @@ function episodeSearch(allEpisodes) {
   document.getElementById("episodeSelector")?.remove();
   document.getElementById("showAllBtn")?.remove();
 
-  const showSelector = document.createElement("select");
-  showSelector.id = "showSelector";
+  
 
 
 
@@ -142,7 +141,7 @@ function episodeSearch(allEpisodes) {
   selectorEl.disabled = true;
   showAllBtn.disabled = true;
 
-  bodyEl.insertBefore(showSelector, rootEl)
+  
   bodyEl.insertBefore(inputEl, rootEl);
   bodyEl.insertBefore(display, rootEl);
   bodyEl.insertBefore(selectorEl, rootEl);
