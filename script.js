@@ -32,6 +32,82 @@ async function fetchEpisodesOnce() {
 }
 
 async function setup() {
+
+const SHOWS_API_URL = "https://api.tvmaze.com/shows";
+let showSelector=document.getElementById("showSelector")
+if(showSelector) showSelector.remove()
+
+  showSelector=document.createElement("select")
+  showSelector.id="showSelector"
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Select a show...";
+  showSelector.appendChild(defaultOption);
+
+  try {
+    const response = await fetch(SHOWS_API_URL);
+    if (response.ok) {
+      const shows = await response.json();
+      shows.forEach((show) => {
+        const option = document.createElement("option");
+        option.value = show.id;
+        option.textContent = show.name;
+        showSelector.appendChild(option);
+      });
+    }
+  } catch(err){
+
+  }
+
+  const bodyEl = document.querySelector("body");
+  const rootEl = document.getElementById("root");
+  bodyEl.insertBefore(showSelector, rootEl);
+
+  showSelector.addEventListener("change", async function () {
+    const showId = showSelector.value;
+    if (!showId) return;
+    const episodesUrl = `https://api.tvmaze.com/shows/${showId}/episodes`;
+    const statusEl = document.getElementById("status");
+    if (statusEl) statusEl.textContent = "Loading episodes...";
+
+    try {
+      const response = await fetch(episodesUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const episodes = await response.json();
+
+      const { inputEl, display, selectorEl, showAllBtn } =
+        episodeSearch(episodes);
+
+      inputEl.disabled = false;
+      selectorEl.disabled = false;
+      showAllBtn.disabled = false;
+
+      showAllBtn.addEventListener("click", function () {
+        selectorEl.value = "all";
+        inputEl.value = "";
+        renderEpisodes(episodes, episodes.length, display);
+      });
+      renderEpisodes(episodes, episodes.length, display);
+
+      selectorEl.addEventListener("change", function () {
+        const selectedId = selectorEl.value;
+        if (selectedId === "all") {
+          renderEpisodes(episodes, episodes.length, display);
+          return;
+        }
+        const selectedEpisode = episodes.find((ep) => ep.id == selectedId);
+        renderEpisodes([selectedEpisode], episodes.length, display);
+      });
+
+      filteredEpisodes(episodes, inputEl, display, selectorEl);
+
+      if (statusEl) statusEl.textContent = "";
+    } catch (err) {
+      if (statusEl)
+        statusEl.textContent =
+          "Sorry, we couldn’t load episodes for this show. Please try again.";
+    }
+  });
   const allEpisodes = await fetchEpisodesOnce();
   if (!allEpisodes) return;
 
@@ -112,6 +188,10 @@ function episodeSearch(allEpisodes) {
   document.getElementById("episodeSelector")?.remove();
   document.getElementById("showAllBtn")?.remove();
 
+  
+
+
+
   const inputEl = document.createElement("input");
   inputEl.setAttribute("placeholder", "Search episodes...");
   inputEl.setAttribute("type", "text");
@@ -137,6 +217,7 @@ function episodeSearch(allEpisodes) {
   selectorEl.disabled = true;
   showAllBtn.disabled = true;
 
+  
   bodyEl.insertBefore(inputEl, rootEl);
   bodyEl.insertBefore(display, rootEl);
   bodyEl.insertBefore(selectorEl, rootEl);
