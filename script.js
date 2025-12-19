@@ -58,16 +58,6 @@ async function setup() {
   showShowsView();
 
   const SHOWS_API_URL = "https://api.tvmaze.com/shows";
-  let showSelector = document.getElementById("showSelector");
-  if (showSelector) showSelector.remove();
-
-  showSelector = document.createElement("select");
-  showSelector.id = "showSelector";
-  const defaultOption = document.createElement("option");
-  defaultOption.value = "";
-  defaultOption.textContent = "Select a show...";
-  showSelector.appendChild(defaultOption);
-
   const shows = await fetchJsonOnce(SHOWS_API_URL);
 
   shows.sort((a, b) =>
@@ -75,87 +65,6 @@ async function setup() {
   );
 
   renderShows(shows);
-
-  const episodesView = document.getElementById("episodes-view");
-  const rootEl = document.getElementById("root");
-  episodesView.insertBefore(showSelector, rootEl);
-
-  showSelector.addEventListener("change", async function () {
-    const showId = showSelector.value;
-    if (!showId) return;
-    const episodesUrl = `https://api.tvmaze.com/shows/${showId}/episodes`;
-    const statusEl = document.getElementById("status");
-    if (statusEl) statusEl.textContent = "Loading episodes...";
-
-    try {
-      const response = await fetch(episodesUrl);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const episodes = await response.json();
-
-      const { inputEl, display, selectorEl, showAllBtn } =
-        episodeSearch(episodes);
-
-      inputEl.disabled = false;
-      selectorEl.disabled = false;
-      showAllBtn.disabled = false;
-
-      showAllBtn.addEventListener("click", function () {
-        selectorEl.value = "all";
-        inputEl.value = "";
-        renderEpisodes(episodes, episodes.length, display);
-      });
-      renderEpisodes(episodes, episodes.length, display);
-
-      selectorEl.addEventListener("change", function () {
-        const selectedId = selectorEl.value;
-        if (selectedId === "all") {
-          renderEpisodes(episodes, episodes.length, display);
-          return;
-        }
-        const selectedEpisode = episodes.find((ep) => ep.id == selectedId);
-        renderEpisodes([selectedEpisode], episodes.length, display);
-      });
-
-      filteredEpisodes(episodes, inputEl, display, selectorEl);
-
-      if (statusEl) statusEl.textContent = "";
-    } catch (err) {
-      if (statusEl)
-        statusEl.textContent =
-          "Sorry, we couldn’t load episodes for this show. Please try again.";
-    }
-  });
-  const allEpisodes = await fetchEpisodesOnce();
-  if (!allEpisodes) return;
-
-  const { inputEl, display, selectorEl, showAllBtn } =
-    episodeSearch(allEpisodes);
-
-  inputEl.disabled = false;
-  selectorEl.disabled = false;
-  showAllBtn.disabled = false;
-
-  showAllBtn.addEventListener("click", function () {
-    selectorEl.value = "all";
-    inputEl.value = "";
-    renderEpisodes(allEpisodes, allEpisodes.length, display);
-  });
-
-  renderEpisodes(allEpisodes, allEpisodes.length, display);
-
-  selectorEl.addEventListener("change", function () {
-    const selectedId = selectorEl.value;
-
-    if (selectedId === "all") {
-      renderEpisodes(allEpisodes, allEpisodes.length, display);
-      return;
-    }
-
-    const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedId);
-    renderEpisodes([selectedEpisode], allEpisodes.length, display);
-  });
-
-  filteredEpisodes(allEpisodes, inputEl, display, selectorEl);
 }
 
 function formatEpisodeCode(episode) {
@@ -169,7 +78,12 @@ function createShowCard(show) {
   card.className = "show-card";
 
   const title = document.createElement("h2");
-  title.textContent = show.name;
+
+  const titleBtn = document.createElement("button");
+  titleBtn.type = "button";
+  titleBtn.textContent = show.name;
+  titleBtn.dataset.showId = show.id;
+  title.appendChild(titleBtn);
 
   const img = document.createElement("img");
   img.alt = `${show.name} poster`;
@@ -307,14 +221,68 @@ function renderShows(shows) {
   });
 }
 
-document.getElementById("retryBtn").addEventListener("click", async () => {
-  cachedEpisodes = null;
-  await setup();
+async function loadEpisodesForShow(showId) {
+  const episodesUrl = `https://api.tvmaze.com/shows/${showId}/episodes`;
+
+  const statusEl = document.getElementById("status");
+  if (statusEl) statusEl.textContent = "Loading episodes...";
+
+  try {
+    const episodes = await fetchJsonOnce(episodesUrl);
+
+    const { inputEl, display, selectorEl, showAllBtn } =
+      episodeSearch(episodes);
+
+    inputEl.disabled = false;
+    selectorEl.disabled = false;
+    showAllBtn.disabled = false;
+
+    showAllBtn.onclick = () => {
+      selectorEl.value = "all";
+      inputEl.value = "";
+      renderEpisodes(episodes, episodes.length, display);
+    };
+
+    selectorEl.onchange = () => {
+      const selectedId = selectorEl.value;
+      if (selectedId === "all") {
+        renderEpisodes(episodes, episodes.length, display);
+        return;
+      }
+      const selectedEpisode = episodes.find((ep) => ep.id == selectedId);
+      renderEpisodes([selectedEpisode], episodes.length, display);
+    };
+
+    filteredEpisodes(episodes, inputEl, display, selectorEl);
+
+    renderEpisodes(episodes, episodes.length, display);
+
+    if (statusEl) statusEl.textContent = "";
+  } catch (err) {
+    if (statusEl)
+      statusEl.textContent = "Sorry, we couldn’t load episodes for this show.";
+  }
+}
+
+document.getElementById("retryBtn").addEventListener("click", () => {
+  // We’ll implement proper retry once we store "last selected show"
 });
 
 document.getElementById("backToShows").addEventListener("click", (event) => {
   event.preventDefault();
   showShowsView();
 });
+
+document
+  .getElementById("showsRoot")
+  .addEventListener("click", async (event) => {
+    const btn = event.target.closest("button[data-show-id]");
+    if (!btn) return;
+
+    const showId = btn.dataset.showId;
+
+    showEpisodesView();
+    await loadEpisodesForShow(showId);
+  });
 
 window.onload = setup;
