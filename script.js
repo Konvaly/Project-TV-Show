@@ -32,13 +32,12 @@ async function fetchEpisodesOnce() {
 }
 
 async function setup() {
+  const SHOWS_API_URL = "https://api.tvmaze.com/shows";
+  let showSelector = document.getElementById("showSelector");
+  if (showSelector) showSelector.remove();
 
-const SHOWS_API_URL = "https://api.tvmaze.com/shows";
-let showSelector=document.getElementById("showSelector")
-if(showSelector) showSelector.remove()
-
-  showSelector=document.createElement("select")
-  showSelector.id="showSelector"
+  showSelector = document.createElement("select");
+  showSelector.id = "showSelector";
   const defaultOption = document.createElement("option");
   defaultOption.value = "";
   defaultOption.textContent = "Select a show...";
@@ -55,13 +54,11 @@ if(showSelector) showSelector.remove()
         showSelector.appendChild(option);
       });
     }
-  } catch(err){
+  } catch (err) {}
 
-  }
-
-  const bodyEl = document.querySelector("body");
+  const episodesView = document.getElementById("episodes-view");
   const rootEl = document.getElementById("root");
-  bodyEl.insertBefore(showSelector, rootEl);
+  episodesView.insertBefore(showSelector, rootEl);
 
   showSelector.addEventListener("change", async function () {
     const showId = showSelector.value;
@@ -154,16 +151,18 @@ function createEpisodeCard(episode) {
   const titleEl = document.createElement("h2");
   titleEl.textContent = `${episode.name} - ${formatEpisodeCode(episode)}`;
 
-  const imageEl = document.createElement("img");
-  imageEl.src = episode.image.medium;
-  imageEl.alt = `${episode.name} episode image`;
-
-  const summaryEl = document.createElement("div");
-  summaryEl.innerHTML = episode.summary;
-
   const contentEl = document.createElement("div");
   contentEl.className = "episode-content";
-  contentEl.appendChild(imageEl);
+
+  if (episode.image?.medium) {
+    const imageEl = document.createElement("img");
+    imageEl.src = episode.image.medium;
+    imageEl.alt = `${episode.name} episode image`;
+    contentEl.appendChild(imageEl);
+  }
+
+  const summaryEl = document.createElement("div");
+  summaryEl.innerHTML = episode.summary ?? "";
   contentEl.appendChild(summaryEl);
 
   episodeEl.appendChild(titleEl);
@@ -188,19 +187,12 @@ function episodeSearch(allEpisodes) {
   document.getElementById("episodeSelector")?.remove();
   document.getElementById("showAllBtn")?.remove();
 
-  
-
-
-
   const inputEl = document.createElement("input");
   inputEl.setAttribute("placeholder", "Search episodes...");
   inputEl.setAttribute("type", "text");
   inputEl.setAttribute("maxlength", "40");
   inputEl.setAttribute("aria-label", "Search episodes");
   inputEl.id = "searchInput";
-
-  const bodyEl = document.querySelector("body");
-  const rootEl = document.getElementById("root");
 
   const display = document.createElement("div");
   display.id = "display";
@@ -213,15 +205,13 @@ function episodeSearch(allEpisodes) {
   showAllBtn.id = "showAllBtn";
   showAllBtn.textContent = "Show all";
 
-  inputEl.disabled = true;
-  selectorEl.disabled = true;
-  showAllBtn.disabled = true;
+  const episodesView = document.getElementById("episodes-view");
+  const rootEl = document.getElementById("root");
 
-  
-  bodyEl.insertBefore(inputEl, rootEl);
-  bodyEl.insertBefore(display, rootEl);
-  bodyEl.insertBefore(selectorEl, rootEl);
-  bodyEl.insertBefore(showAllBtn, rootEl);
+  episodesView.insertBefore(inputEl, rootEl);
+  episodesView.insertBefore(display, rootEl);
+  episodesView.insertBefore(selectorEl, rootEl);
+  episodesView.insertBefore(showAllBtn, rootEl);
 
   display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
 
@@ -251,7 +241,7 @@ function filteredEpisodes(allEpisodes, inputEl, display, selectorEl) {
     const matchedEpisodes = allEpisodes.filter(
       (episode) =>
         episode.name.toLowerCase().includes(inputValue.toLowerCase()) ||
-        episode.summary.toLowerCase().includes(inputValue.toLowerCase())
+        (episode.summary ?? "").toLowerCase().includes(inputValue.toLowerCase())
     );
     renderEpisodes(matchedEpisodes, allEpisodes.length, display);
   });
