@@ -12,6 +12,19 @@ function showEpisodesView() {
   document.getElementById("episodes-view").hidden = false;
 }
 
+const fetchCache = {};
+
+async function fetchJsonOnce(url) {
+  if (fetchCache[url]) return fetchCache[url];
+
+  fetchCache[url] = fetch(url).then((response) => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  });
+
+  return fetchCache[url];
+}
+
 async function fetchEpisodesOnce() {
   if (cachedEpisodes) return cachedEpisodes;
 
@@ -55,18 +68,13 @@ async function setup() {
   defaultOption.textContent = "Select a show...";
   showSelector.appendChild(defaultOption);
 
-  try {
-    const response = await fetch(SHOWS_API_URL);
-    if (response.ok) {
-      const shows = await response.json();
-      shows.forEach((show) => {
-        const option = document.createElement("option");
-        option.value = show.id;
-        option.textContent = show.name;
-        showSelector.appendChild(option);
-      });
-    }
-  } catch (err) {}
+  const shows = await fetchJsonOnce(SHOWS_API_URL);
+
+  shows.sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+  );
+
+  renderShows(shows);
 
   const episodesView = document.getElementById("episodes-view");
   const rootEl = document.getElementById("root");
@@ -154,6 +162,32 @@ function formatEpisodeCode(episode) {
   const season = String(episode.season).padStart(2, "0");
   const number = String(episode.number).padStart(2, "0");
   return `S${season}E${number}`;
+}
+
+function createShowCard(show) {
+  const card = document.createElement("article");
+  card.className = "show-card";
+
+  const title = document.createElement("h2");
+  title.textContent = show.name;
+
+  const img = document.createElement("img");
+  img.alt = `${show.name} poster`;
+  if (show.image?.medium) img.src = show.image.medium;
+  else img.remove();
+
+  const summary = document.createElement("div");
+  summary.innerHTML = show.summary ?? "";
+
+  const meta = document.createElement("p");
+  const genres = (show.genres ?? []).join(", ");
+  const rating = show.rating?.average ?? "N/A";
+  const runtime = show.runtime ?? "N/A";
+  meta.textContent = `Genres: ${genres} | Rating: ${rating} | Status: ${show.status} | Runtime: ${runtime}`;
+
+  card.append(title, img, meta, summary);
+
+  return card;
 }
 
 function createEpisodeCard(episode) {
@@ -256,6 +290,20 @@ function filteredEpisodes(allEpisodes, inputEl, display, selectorEl) {
         (episode.summary ?? "").toLowerCase().includes(inputValue.toLowerCase())
     );
     renderEpisodes(matchedEpisodes, allEpisodes.length, display);
+  });
+}
+
+function renderShows(shows) {
+  const showsRoot = document.getElementById("showsRoot");
+  const showsDisplay = document.getElementById("showsDisplay");
+
+  showsRoot.innerHTML = "";
+
+  showsDisplay.textContent = `Showing ${shows.length} show(s)`;
+
+  shows.forEach((show) => {
+    const card = createShowCard(show);
+    showsRoot.appendChild(card);
   });
 }
 
