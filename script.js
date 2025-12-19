@@ -2,6 +2,16 @@
 const EPISODES_API_URL = "https://api.tvmaze.com/shows/82/episodes";
 let cachedEpisodes = null;
 
+function showShowsView() {
+  document.getElementById("shows-view").hidden = false;
+  document.getElementById("episodes-view").hidden = true;
+}
+
+function showEpisodesView() {
+  document.getElementById("shows-view").hidden = true;
+  document.getElementById("episodes-view").hidden = false;
+}
+
 async function fetchEpisodesOnce() {
   if (cachedEpisodes) return cachedEpisodes;
 
@@ -32,6 +42,8 @@ async function fetchEpisodesOnce() {
 }
 
 async function setup() {
+  showShowsView();
+
   const SHOWS_API_URL = "https://api.tvmaze.com/shows";
   let showSelector = document.getElementById("showSelector");
   if (showSelector) showSelector.remove();
@@ -250,6 +262,11 @@ function filteredEpisodes(allEpisodes, inputEl, display, selectorEl) {
 document.getElementById("retryBtn").addEventListener("click", async () => {
   cachedEpisodes = null;
   await setup();
+});
+
+document.getElementById("backToShows").addEventListener("click", (event) => {
+  event.preventDefault();
+  showShowsView();
 });
 
 window.onload = setup;
