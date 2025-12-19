@@ -10,15 +10,30 @@
 </head>
 
 <body>
-  <div id="status" role="status" aria-live="polite">
-    Loading episodes...
-  </div>
+  <section id="shows-view">
+    <h1>TV Shows</h1>
+    <label>
+      Search shows:
+      <input id="showSearchInput" type="text" placeholder="Search by name, genre, summary..." />
+    </label>
+    <div id="showsDisplay"></div>
+    <div id="showsRoot"></div>
+  </section>
 
-  <div id="status" role="status" aria-live="polite"></div>
-  <button id="retryBtn" hidden>Retry loading episodes</button>
+  <section id="episodes-view" hidden>
+    <nav>
+      <a href="#" id="backToShows">← Back to shows</a>
+    </nav>
 
-  <div id="root">
-  </div>
+    <div id="status" role="status" aria-live="polite">
+      Loading episodes...
+    </div>
+
+    <button id="retryBtn" hidden>Retry loading episodes</button>
+
+    <div id="root">
+    </div>
+  </section>
 
   <footer id="tvmaze-credit">
     Data originally from
