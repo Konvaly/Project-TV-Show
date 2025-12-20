@@ -122,11 +122,6 @@ function makePageForEpisodes(episodeList) {
 }
 
 function episodeSearch(allEpisodes) {
-  document.getElementById("searchInput")?.remove();
-  document.getElementById("display")?.remove();
-  document.getElementById("episodeSelector")?.remove();
-  document.getElementById("showAllBtn")?.remove();
-
   const inputEl = document.createElement("input");
   inputEl.setAttribute("placeholder", "Search episodes...");
   inputEl.setAttribute("type", "text");
@@ -271,12 +266,6 @@ async function loadEpisodesForShow(showId) {
     document.getElementById("retryBtn").hidden = false;
   }
 }
-
-document.getElementById("retryBtn").addEventListener("click", () => {
-  const statusEl = document.getElementById("status");
-  statusEl.textContent =
-    "Retry is disabled in this version (we never refetch the same URL). Please refresh the page to try again.";
-});
 
 document.getElementById("backToShows").addEventListener("click", (event) => {
   event.preventDefault();
