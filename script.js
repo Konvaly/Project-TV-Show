@@ -228,25 +228,33 @@ function renderShows(shows) {
   });
 }
 
+function filterShows(allShows, searchTerm) {
+  const q = searchTerm.trim().toLowerCase();
+  if (q === "") return allShows;
+
+  return allShows.filter((show) => {
+    const name = (show.name ?? "").toLowerCase();
+    const summary = (show.summary ?? "").toLowerCase();
+    const genresText = (show.genres ?? []).join(" ").toLowerCase();
+
+    return name.includes(q) || summary.includes(q) || genresText.includes(q);
+  });
+}
+
+let showSearchWired = false;
+
 function wireShowSearch() {
+  if (showSearchWired) return;
+
   const input = document.getElementById("showSearchInput");
   if (!input) return;
 
-  input.oninput = () => {
-    const term = input.value.trim().toLowerCase();
-
-    const filtered = allShows.filter((show) => {
-      const name = (show.name ?? "").toLowerCase();
-      const summary = (show.summary ?? "").toLowerCase();
-      const genres = (show.genres ?? []).join(" ").toLowerCase();
-
-      return (
-        name.includes(term) || summary.includes(term) || genres.includes(term)
-      );
-    });
-
+  input.addEventListener("input", () => {
+    const filtered = filterShows(allShows, input.value);
     renderShows(filtered);
-  };
+  });
+
+  showSearchWired = true;
 }
 
 async function loadEpisodesForShow(showId) {
@@ -312,7 +320,7 @@ document
 
     const showId = btn.dataset.showId;
 
-    document.getElementById("root").innerHTML = "";
+    clearEpisodesUI();
     document.getElementById("status").textContent = "Loading episodes...";
 
     showEpisodesView();
