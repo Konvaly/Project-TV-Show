@@ -263,7 +263,7 @@ async function loadEpisodesForShow(showId) {
     if (statusEl)
       statusEl.textContent =
         "Sorry, we couldn’t load episodes for this show. Please refresh the page and try again.";
-    document.getElementById("retryBtn").hidden = false;
+    document.getElementById("retryBtn").hidden = true;
   }
 }
 
