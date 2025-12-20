@@ -21,6 +21,8 @@ function clearEpisodesUI() {
 
 const fetchCache = {};
 
+let allShows = [];
+
 async function fetchJsonOnce(url) {
   if (fetchCache[url]) return fetchCache[url];
 
@@ -65,13 +67,15 @@ async function setup() {
   showShowsView();
 
   const SHOWS_API_URL = "https://api.tvmaze.com/shows";
-  const shows = await fetchJsonOnce(SHOWS_API_URL);
 
-  shows.sort((a, b) =>
+  allShows = await fetchJsonOnce(SHOWS_API_URL);
+
+  allShows.sort((a, b) =>
     a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
   );
 
-  renderShows(shows);
+  renderShows(allShows);
+  wireShowSearch();
 }
 
 function formatEpisodeCode(episode) {
@@ -222,6 +226,27 @@ function renderShows(shows) {
     const card = createShowCard(show);
     showsRoot.appendChild(card);
   });
+}
+
+function wireShowSearch() {
+  const input = document.getElementById("showSearchInput");
+  if (!input) return;
+
+  input.oninput = () => {
+    const term = input.value.trim().toLowerCase();
+
+    const filtered = allShows.filter((show) => {
+      const name = (show.name ?? "").toLowerCase();
+      const summary = (show.summary ?? "").toLowerCase();
+      const genres = (show.genres ?? []).join(" ").toLowerCase();
+
+      return (
+        name.includes(term) || summary.includes(term) || genres.includes(term)
+      );
+    });
+
+    renderShows(filtered);
+  };
 }
 
 async function loadEpisodesForShow(showId) {
