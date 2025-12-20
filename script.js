@@ -1,6 +1,4 @@
 //You can edit ALL of the code here
-const EPISODES_API_URL = "https://api.tvmaze.com/shows/82/episodes";
-let cachedEpisodes = null;
 
 function showShowsView() {
   document.getElementById("shows-view").hidden = false;
@@ -23,8 +21,8 @@ const fetchCache = {};
 
 let allShows = [];
 
-async function fetchJsonOnce(url) {
-  if (fetchCache[url]) return fetchCache[url];
+function fetchJsonOnce(url) {
+  if (url in fetchCache) return fetchCache[url];
 
   fetchCache[url] = fetch(url).then((response) => {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -32,35 +30,6 @@ async function fetchJsonOnce(url) {
   });
 
   return fetchCache[url];
-}
-
-async function fetchEpisodesOnce() {
-  if (cachedEpisodes) return cachedEpisodes;
-
-  const statusEl = document.getElementById("status");
-  const retryBtn = document.getElementById("retryBtn");
-
-  statusEl.textContent = "Loading episodes...";
-  retryBtn.hidden = true;
-
-  try {
-    const response = await fetch(EPISODES_API_URL);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const episodes = await response.json();
-    cachedEpisodes = episodes;
-
-    statusEl.textContent = "";
-    return episodes;
-  } catch (err) {
-    statusEl.textContent =
-      "Sorry, we couldn’t load episodes right now. Please refresh the page and try again.";
-    retryBtn.hidden = false;
-    return null;
-  }
 }
 
 async function setup() {
@@ -294,13 +263,20 @@ async function loadEpisodesForShow(showId) {
     renderEpisodes(episodes, episodes.length, display);
 
     if (statusEl) statusEl.textContent = "";
+    document.getElementById("retryBtn").hidden = true;
   } catch (err) {
     if (statusEl)
-      statusEl.textContent = "Sorry, we couldn’t load episodes for this show.";
+      statusEl.textContent =
+        "Sorry, we couldn’t load episodes for this show. Please refresh the page and try again.";
+    document.getElementById("retryBtn").hidden = false;
   }
 }
 
-document.getElementById("retryBtn").addEventListener("click", () => {});
+document.getElementById("retryBtn").addEventListener("click", () => {
+  const statusEl = document.getElementById("status");
+  statusEl.textContent =
+    "Retry is disabled in this version (we never refetch the same URL). Please refresh the page to try again.";
+});
 
 document.getElementById("backToShows").addEventListener("click", (event) => {
   event.preventDefault();
