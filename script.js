@@ -12,6 +12,13 @@ function showEpisodesView() {
   document.getElementById("episodes-view").hidden = false;
 }
 
+function clearEpisodesUI() {
+  document.getElementById("root").innerHTML = "";
+  document.getElementById("episodes-controls").innerHTML = "";
+  document.getElementById("status").textContent = "";
+  document.getElementById("retryBtn").hidden = true;
+}
+
 const fetchCache = {};
 
 async function fetchJsonOnce(url) {
@@ -165,13 +172,9 @@ function episodeSearch(allEpisodes) {
   showAllBtn.id = "showAllBtn";
   showAllBtn.textContent = "Show all";
 
-  const episodesView = document.getElementById("episodes-view");
-  const rootEl = document.getElementById("root");
-
-  episodesView.insertBefore(inputEl, rootEl);
-  episodesView.insertBefore(display, rootEl);
-  episodesView.insertBefore(selectorEl, rootEl);
-  episodesView.insertBefore(showAllBtn, rootEl);
+  const controls = document.getElementById("episodes-controls");
+  controls.innerHTML = "";
+  controls.append(inputEl, display, selectorEl, showAllBtn);
 
   display.innerHTML = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes`;
 
@@ -264,13 +267,16 @@ async function loadEpisodesForShow(showId) {
   }
 }
 
-document.getElementById("retryBtn").addEventListener("click", () => {
-  // We’ll implement proper retry once we store "last selected show"
-});
+document.getElementById("retryBtn").addEventListener("click", () => {});
 
 document.getElementById("backToShows").addEventListener("click", (event) => {
   event.preventDefault();
+
+  clearEpisodesUI();
+
   showShowsView();
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 document
