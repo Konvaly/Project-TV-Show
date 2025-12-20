@@ -312,6 +312,9 @@ document
 
     const showId = btn.dataset.showId;
 
+    document.getElementById("root").innerHTML = "";
+    document.getElementById("status").textContent = "Loading episodes...";
+
     showEpisodesView();
     await loadEpisodesForShow(showId);
   });
